@@ -14,12 +14,12 @@ torlink is a torrent finder that lives in your terminal, with zero setup and not
    npx torlink
    ```
 
-That's it, nothing else to install. Once it's open you can paste a magnet link straight into the search box. You can also start from the command line:
+That's it, nothing else to install. Once it's open you can paste a magnet link straight into the search box, or just press Enter while it's empty to browse the curated library. You can also start from the command line:
 
 ```sh
-npx torlink "magnet:?xt=..."   # start from a magnet link
-npx torlink ./file.torrent     # open a .torrent file
-npm install -g torlink         # install for good, then run: torlink
+npx torlink "magnet:?xt=..."           # start from a magnet link
+npx torlink "<path/to/file.torrent>"   # open a .torrent file
+npm install -g torlink                 # install for good, then run: torlink
 ```
 
 ## What it does
@@ -47,7 +47,7 @@ Your active downloads and the stuff you've already grabbed share one pane. Whate
 
 ## What it searches
 
-A short, hand-picked set instead of a directory of unknowns:
+A short, hand-picked list of trusted sources:
 
 | Category | Sources |
 | --- | --- |
