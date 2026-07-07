@@ -13,7 +13,7 @@ import {
   type SeedRecord,
 } from "./persist";
 import { saveHistory, saveHistorySync, type HistoryItem } from "./history";
-import type { QueueItem, SeedItem } from "./types";
+import type { QueueItem, SeedItem, PeerInfo } from "./types";
 import type { SourceId } from "../sources/types";
 
 /**
@@ -551,6 +551,10 @@ export class DownloadQueue extends EventEmitter {
     saveQueueSync(this.getItems());
     saveHistorySync(this.history);
     saveSeedsSync(this.seedRecords());
+  }
+
+  getPeers(id: string): PeerInfo[] | null {
+    return this.engine.getPeers(id);
   }
 
   suspend(): void {
