@@ -17,7 +17,7 @@ import type {
   DownloadStatus,
   QueueItem,
   SeedItem,
-  TorrentFileInfo,
+  TorrentFileInfo, 
   PeerInfo,
 } from "./types";
 import type { SourceId } from "../sources/types";
@@ -617,6 +617,10 @@ export class DownloadQueue extends EventEmitter {
     saveQueueSync(this.getItems());
     saveHistorySync(this.history);
     saveSeedsSync(this.seedRecords());
+  }
+
+  getPeers(id: string): PeerInfo[] | null {
+    return this.engine.getPeers(id);
   }
 
   suspend(): void {

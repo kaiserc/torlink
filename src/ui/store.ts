@@ -49,6 +49,9 @@ export interface Store {
   seedFocus: SeedFocus | null;
   setSeedFocus: (f: SeedFocus | null) => void;
 
+  inspectingId: string | null;
+  setInspectingId: (id: string | null) => void;
+
   startDownload: (input: {
     id: string;
     name: string;
