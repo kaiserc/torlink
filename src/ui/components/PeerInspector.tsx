@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { Box, Text, useInput } from "ink";
 import { useStore, usePeers } from "../store";
 import { Panel } from "./Panel";

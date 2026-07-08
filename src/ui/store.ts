@@ -49,6 +49,8 @@ export interface Store {
   seedFocus: SeedFocus | null;
   setSeedFocus: (f: SeedFocus | null) => void;
 
+
+
   startDownload: (input: {
     id: string;
     name: string;
@@ -215,7 +217,6 @@ export function usePeers(queue: DownloadQueue, id: string | null): PeerInfo[] | 
       return;
     }
     
-    // We bind to the queue's internal 500ms update ticker
     let timer: ReturnType<typeof setTimeout> | null = null;
     const onUpdate = (): void => {
       if (timer) return;
@@ -226,7 +227,7 @@ export function usePeers(queue: DownloadQueue, id: string | null): PeerInfo[] | 
     };
     
     queue.on("update", onUpdate);
-    onUpdate(); // Grab initial instantly
+    onUpdate();
     
     return () => {
       queue.off("update", onUpdate);

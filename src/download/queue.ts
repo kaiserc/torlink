@@ -619,6 +619,8 @@ export class DownloadQueue extends EventEmitter {
     saveSeedsSync(this.seedRecords());
   }
 
+
+
   suspend(): void {
     // Keep active downloads as "downloading" so restore() resumes them on the
     // next launch (mirroring how seeds auto-restore); just zero the live stats.

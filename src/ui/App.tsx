@@ -22,9 +22,11 @@ import {
   type SeedFocus,
   type Store,
   type View,
+  useStore,
 } from "./store";
 import { Logo } from "./components/Logo";
 import { Sidebar, RAIL_WIDTH } from "./components/Sidebar";
+import { PeerInspector } from "./components/PeerInspector";
 import { Rule } from "./components/Rule";
 import { Footer } from "./components/Footer";
 import { HelpOverlay } from "./components/HelpOverlay";
@@ -34,7 +36,6 @@ import { Seeding } from "./components/Seeding";
 import { Spinner } from "./components/Spinner";
 import { TabTitle } from "./components/TabTitle";
 import { Files } from "./components/Files";
-import { PeerInspector } from "./components/PeerInspector";
 import { Splash } from "./views/Splash";
 import { FolderPrompt } from "./components/FolderPrompt";
 import { TrackersPrompt } from "./components/TrackersPrompt";
@@ -165,6 +166,7 @@ export function App({
     setInspectingId(null);
     setInspectingPeersId(null);
   }, [section]);
+
 
   useEffect(
     () => () => {
@@ -548,6 +550,14 @@ export function App({
         if (inspectingPeersId) setInspectingPeersId(null);
         return;
       }
+      if (input === "w") {
+        if (inspectingPeersId) setInspectingPeersId(null);
+        return;
+      }
+      if (input === "w") {
+        if (inspectingId) setInspectingId(null);
+        return;
+      }
       if (key.tab) {
         if (inspectingId) setInspectingId(null);
         if (inspectingPeersId) setInspectingPeersId(null);
@@ -559,6 +569,14 @@ export function App({
         return;
       }
       if (key.leftArrow || input === "h") {
+        if (inspectingId) {
+          setInspectingId(null);
+          return;
+        }
+        if (inspectingPeersId) {
+          setInspectingPeersId(null);
+          return;
+        }
         if (region === "content") setRegion("sidebar");
         return;
       }
@@ -566,6 +584,10 @@ export function App({
         if (captureMode === "esc") return;
         if (inspectingId) {
           setInspectingId(null);
+          return;
+        }
+        if (inspectingPeersId) {
+          setInspectingPeersId(null);
           return;
         }
         if (region === "content") {
