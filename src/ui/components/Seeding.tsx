@@ -31,6 +31,7 @@ function statusCell(seed: SeedItem | undefined): { text: string; color?: string;
 
 export function Seeding() {
   const { queue, region, contentWidth, listRows, setNotice, openDownloadFolder, setSeedFocus, setInspectingId } =
+  const { queue, region, contentWidth, listRows, setNotice, openDownloadFolder, setSeedFocus, setInspectingId } =
     useStore();
   const history = useQueueHistory(queue);
   const seeds = useSeeds(queue);

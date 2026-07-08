@@ -86,6 +86,7 @@ const TORRENT: Hint = { keys: "s", label: "Export" };
 export function footerHints(
   region: Region,
   section: Section,
+  inspectingId?: string | null,
   downloadFocus?: DownloadFocus | null,
   seedFocus?: SeedFocus | null,
   inspecting?: boolean,
@@ -103,38 +104,39 @@ export function footerHints(
       ALWAYS,
     ];
   }
-  if (region === "sidebar") {
-    return [
-      NAVIGATE,
-      { keys: "↵", label: "Open" },
-      SWITCH,
-      ALWAYS,
-      { keys: "q", label: "Quit" },
-    ];
-  }
-  if (section === "seeding") {
-    const label =
-      seedFocus === "seeding" ? "Pause" : seedFocus === "missing" ? "Retry" : "Resume";
-    return [{ keys: "p", label }, { keys: "c", label: "Remove" }, FOLDER, SWITCH, ALWAYS];
-  }
-  if (section === "downloads") {
-    if (downloadFocus === "paused") {
-      return [{ keys: "i", label: "Files" }, { keys: "p", label: "Resume" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
-    }
-    if (downloadFocus === "failed") {
-      return [{ keys: "i", label: "Files" }, { keys: "f", label: "Retry" }, { keys: "c", label: "Remove" }, FOLDER, TORRENT, SWITCH, ALWAYS];
-    }
-    if (downloadFocus === "recent") {
+  const getHints = (): Hint[] => {
+    if (region === "sidebar") {
       return [
-        { keys: "d", label: "Redownload" },
-        { keys: "c", label: "Remove" },
-        { keys: "x", label: "Clear" },
-        FOLDER,
-        TORRENT,
+        NAVIGATE,
+        { keys: "↵", label: "Open" },
         SWITCH,
         ALWAYS,
+        { keys: "q", label: "Quit" },
       ];
     }
+    if (section === "seeding") {
+      const label =
+        seedFocus === "seeding" ? "Pause" : seedFocus === "missing" ? "Retry" : "Resume";
+      return [{ keys: "p", label }, { keys: "c", label: "Remove" }, FOLDER, SWITCH, ALWAYS];
+    }
+    if (section === "downloads") {
+      if (downloadFocus === "paused") {
+        return [{ keys: "i", label: "Files" }, { keys: "p", label: "Resume" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
+      }
+      if (downloadFocus === "failed") {
+        return [{ keys: "i", label: "Files" }, { keys: "f", label: "Retry" }, { keys: "c", label: "Remove" }, FOLDER, TORRENT, SWITCH, ALWAYS];
+      }
+      if (downloadFocus === "recent") {
+        return [
+          { keys: "d", label: "Redownload" },
+          { keys: "c", label: "Remove" },
+          { keys: "x", label: "Clear" },
+          FOLDER,
+          TORRENT,
+          SWITCH,
+          ALWAYS,
+        ];
+      }
     if (downloadFocus === "downloading") {
       return [
         { keys: "i", label: "Files" },
@@ -147,18 +149,40 @@ export function footerHints(
         ALWAYS,
       ];
     }
-    return [{ keys: "p", label: "Pause" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
-  }
-  return [
-    NAVIGATE,
-    // The footer advertises only the default download key; D (download to a
-    // chosen folder) stays bound but lives in the `?` sheet alone.
-    { keys: "d", label: "Download" },
+      return [{ keys: "p", label: "Pause" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
+    }
+    return [
+      NAVIGATE,
+      // The footer advertises only the default download key; D (download to a
+      // chosen folder) stays bound but lives in the `?` sheet alone.
+      { keys: "d", label: "Download" },
     { keys: "i", label: "Files" },
-    { keys: "y", label: "Copy" },
-    { keys: "s", label: "Sort" },
-    { keys: "/", label: "Search" },
-    SWITCH,
-    ALWAYS,
-  ];
+      { keys: "y", label: "Copy" },
+      { keys: "s", label: "Sort" },
+      { keys: "/", label: "Search" },
+      SWITCH,
+      ALWAYS,
+    ];
+  };
+
+  const hints = getHints();
+  
+  if (region === "content" && (section === "downloads" || section === "seeding")) {
+    const focusExists = section === "downloads" ? !!downloadFocus : !!seedFocus;
+    if (focusExists) {
+      const peerHint: Hint = inspectingId
+        ? { keys: "w", label: "Close" }
+        : { keys: "w", label: "Peers" };
+      const switchIdx = hints.findIndex((h) => h.keys === "tab");
+      if (switchIdx >= 0) hints.splice(switchIdx, 0, peerHint);
+      else hints.push(peerHint);
+
+      if (inspectingId) {
+        const sortHint = hints.find((h) => h.keys === "s");
+        if (sortHint) sortHint.label = "Sort Peers";
+      }
+    }
+  }
+
+  return hints;
 }

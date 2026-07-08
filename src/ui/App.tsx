@@ -22,9 +22,11 @@ import {
   type SeedFocus,
   type Store,
   type View,
+  useStore,
 } from "./store";
 import { Logo } from "./components/Logo";
 import { Sidebar, RAIL_WIDTH } from "./components/Sidebar";
+import { PeerInspector } from "./components/PeerInspector";
 import { Rule } from "./components/Rule";
 import { Footer } from "./components/Footer";
 import { HelpOverlay } from "./components/HelpOverlay";
@@ -85,6 +87,7 @@ export function App({
   const [captureMode, setCaptureMode] = useState<CaptureMode>("none");
   const [downloadFocus, setDownloadFocus] = useState<DownloadFocus | null>(null);
   const [seedFocus, setSeedFocus] = useState<SeedFocus | null>(null);
+  const [inspectingId, setInspectingId] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [editingFolder, setEditingFolder] = useState(false);
   const [editingTrackers, setEditingTrackers] = useState(false);
@@ -158,6 +161,10 @@ export function App({
       queue.off("completed", onCompleted);
     };
   }, [queue]);
+
+  useEffect(() => {
+    setInspectingId(null);
+  }, [section]);
 
   useEffect(
     () => () => {
@@ -436,6 +443,8 @@ export function App({
       setDownloadFocus,
       seedFocus,
       setSeedFocus,
+      inspectingId,
+      setInspectingId,
       startDownload,
       requestDownloadTo,
       copyMagnet,
@@ -521,7 +530,12 @@ export function App({
         void pasteFromClipboard();
         return;
       }
+      if (input === "w") {
+        if (inspectingId) setInspectingId(null);
+        return;
+      }
       if (key.tab) {
+        if (inspectingId) setInspectingId(null);
         setRegion(region === "sidebar" ? "content" : "sidebar");
         return;
       }
@@ -530,6 +544,10 @@ export function App({
         return;
       }
       if (key.leftArrow || input === "h") {
+        if (inspectingId) {
+          setInspectingId(null);
+          return;
+        }
         if (region === "content") setRegion("sidebar");
         return;
       }
@@ -637,6 +655,8 @@ export function App({
           <Box flexGrow={1} flexDirection="column">
             {inspectingId ? (
               <Files />
+            ) : inspectingId ? (
+              <PeerInspector id={inspectingId} />
             ) : section === "downloads" ? (
               <Downloads />
             ) : section === "seeding" ? (
@@ -649,7 +669,7 @@ export function App({
 
         {showFooter ? (
           <Box display={showHelp || editingFolder || editingTrackers || pendingDownload ? "none" : "flex"}>
-            <Footer hints={footerHints(region, section, downloadFocus, seedFocus, !!inspectingId, inspectFocusSelected)} />
+            <Footer hints={footerHints(region, section, inspectingId, downloadFocus, seedFocus, !!inspectingId, inspectFocusSelected)} />
           </Box>
         ) : null}
       </Box>

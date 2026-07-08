@@ -11,6 +11,16 @@ export interface TorrentFileInfo {
   selected: boolean;
 }
 
+export interface PeerInfo {
+  ip: string;
+  client: string;
+  peerId: string;
+  downloaded: number;
+  uploaded: number;
+  downSpeed: number;
+  upSpeed: number;
+}
+
 export interface SeedItem {
   id: string;
   name: string;
