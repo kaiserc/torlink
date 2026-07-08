@@ -93,17 +93,18 @@ export function footerHints(
   inspecting?: boolean,
   inspectFocusSelected?: boolean
 ): Hint[] {
-  if (inspecting) {
+  const getHints = (): Hint[] => {
+    if (inspecting) {
     const spaceLabel = inspectFocusSelected ? "Skip" : "Keep";
     const spaceColor = inspectFocusSelected ? "red" : "green";
-    return [
-      { keys: "↑↓", label: "Move" },
+      return [
+        { keys: "↑↓", label: "Move" },
       { keys: "space", label: spaceLabel, color: spaceColor },
-      { keys: "↵", label: "Open" },
-      STREAM,
+        { keys: "↵", label: "Open" },
+        STREAM,
       { keys: "esc", label: "Back" },
-      ALWAYS,
-    ];
+        ALWAYS,
+      ];
   }
   const getHints = (): Hint[] => {
     if (region === "sidebar") {
@@ -113,32 +114,32 @@ export function footerHints(
         SWITCH,
         ALWAYS,
         { keys: "q", label: "Quit" },
-      ];
-    }
-    if (section === "seeding") {
-      const label =
-        seedFocus === "seeding" ? "Pause" : seedFocus === "missing" ? "Retry" : "Resume";
-      return [{ keys: "p", label }, { keys: "c", label: "Remove" }, FOLDER, SWITCH, ALWAYS];
-    }
-    if (section === "downloads") {
-      if (downloadFocus === "paused") {
-        return [{ keys: "i", label: "Files" }, { keys: "p", label: "Resume" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
-      }
-      if (downloadFocus === "failed") {
-        return [{ keys: "i", label: "Files" }, { keys: "f", label: "Retry" }, { keys: "c", label: "Remove" }, FOLDER, TORRENT, SWITCH, ALWAYS];
-      }
-      if (downloadFocus === "recent") {
-        return [
-          { keys: "d", label: "Redownload" },
-          { keys: "c", label: "Remove" },
-          { keys: "x", label: "Clear" },
-          FOLDER,
-          TORRENT,
-          SWITCH,
-          ALWAYS,
         ];
       }
-    if (downloadFocus === "downloading") {
+      if (section === "seeding") {
+        const label =
+          seedFocus === "seeding" ? "Pause" : seedFocus === "missing" ? "Retry" : "Resume";
+        return [{ keys: "p", label }, { keys: "c", label: "Remove" }, FOLDER, SWITCH, ALWAYS];
+      }
+      if (section === "downloads") {
+        if (downloadFocus === "paused") {
+          return [{ keys: "i", label: "Files" }, { keys: "p", label: "Resume" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
+        }
+        if (downloadFocus === "failed") {
+          return [{ keys: "i", label: "Files" }, { keys: "f", label: "Retry" }, { keys: "c", label: "Remove" }, FOLDER, TORRENT, SWITCH, ALWAYS];
+        }
+        if (downloadFocus === "recent") {
+          return [
+            { keys: "d", label: "Redownload" },
+            { keys: "c", label: "Remove" },
+            { keys: "x", label: "Clear" },
+            FOLDER,
+            TORRENT,
+            SWITCH,
+            ALWAYS,
+          ];
+        }
+      if (downloadFocus === "downloading") {
       return [
         { keys: "i", label: "Files" },
         { keys: "p", label: "Pause" },
@@ -151,19 +152,33 @@ export function footerHints(
       ];
     }
       return [{ keys: "p", label: "Pause" }, { keys: "c", label: "Cancel" }, STREAM, FOLDER, TORRENT, SWITCH, ALWAYS];
-    }
-    return [
-      NAVIGATE,
-      // The footer advertises only the default download key; D (download to a
-      // chosen folder) stays bound but lives in the `?` sheet alone.
-      { keys: "d", label: "Download" },
-    { keys: "i", label: "Files" },
+      }
+      return [
+        NAVIGATE,
+        // The footer advertises only the default download key; D (download to a
+        // chosen folder) stays bound but lives in the `?` sheet alone.
+        { keys: "d", label: "Download" },
+      { keys: "i", label: "Files" },
       { keys: "y", label: "Copy" },
-      { keys: "s", label: "Sort" },
-      { keys: "/", label: "Search" },
-      SWITCH,
-      ALWAYS,
-    ];
+        { keys: "s", label: "Sort" },
+        { keys: "/", label: "Search" },
+        SWITCH,
+        ALWAYS,
+      ];
+  };
+
+  const hints = getHints();
+  const throttleHint: Hint = throttleEnabled
+    ? { keys: "T", label: "Full Speed", color: "green" }
+    : { keys: "T", label: "Turtle", color: "red" };
+
+  const switchIdx = hints.findIndex((h) => h.keys === "tab");
+  if (switchIdx >= 0) {
+    hints.splice(switchIdx, 0, throttleHint);
+  } else {
+    hints.push(throttleHint);
+  }
+  return hints;
   };
 
   const hints = getHints();

@@ -315,6 +315,10 @@ export class DownloadQueue extends EventEmitter {
     void this.persist();
   }
 
+  setThrottle(enabled: boolean, downLimit: number, upLimit: number): void {
+    this.engine.setThrottle(enabled, downLimit, upLimit);
+  }
+
   async stream(id: string, targetPath?: string): Promise<string | null> {
     return this.engine.stream(id, targetPath);
   }
