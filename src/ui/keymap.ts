@@ -89,7 +89,6 @@ export function footerHints(
   section: Section,
   throttleEnabled: boolean,
   inspectingPeersId?: string | null,
-  inspectingId?: string | null,
   downloadFocus?: DownloadFocus | null,
   seedFocus?: SeedFocus | null,
   inspecting?: boolean,

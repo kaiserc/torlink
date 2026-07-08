@@ -87,7 +87,6 @@ export function App({
   const [captureMode, setCaptureMode] = useState<CaptureMode>("none");
   const [downloadFocus, setDownloadFocus] = useState<DownloadFocus | null>(null);
   const [seedFocus, setSeedFocus] = useState<SeedFocus | null>(null);
-  const [inspectingId, setInspectingId] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
   const [editingFolder, setEditingFolder] = useState(false);
   const [editingTrackers, setEditingTrackers] = useState(false);
@@ -457,8 +456,6 @@ export function App({
       setDownloadFocus,
       seedFocus,
       setSeedFocus,
-      inspectingId,
-      setInspectingId,
       startDownload,
       requestDownloadTo,
       copyMagnet,
@@ -572,6 +569,10 @@ export function App({
           setInspectingId(null);
           return;
         }
+        if (inspectingPeersId) {
+          setInspectingPeersId(null);
+          return;
+        }
         if (region === "content") setRegion("sidebar");
         return;
       }
@@ -579,6 +580,10 @@ export function App({
         if (captureMode === "esc") return;
         if (inspectingId) {
           setInspectingId(null);
+          return;
+        }
+        if (inspectingPeersId) {
+          setInspectingPeersId(null);
           return;
         }
         if (region === "content") {
@@ -702,7 +707,7 @@ export function App({
 
         {showFooter ? (
           <Box display={showHelp || editingFolder || editingTrackers || pendingDownload ? "none" : "flex"}>
-            <Footer hints={footerHints(region, section, store.config.throttleEnabled, inspectingPeersId, inspectingId, inspectingId, downloadFocus, seedFocus, !!inspectingId, inspectFocusSelected)} />
+            <Footer hints={footerHints(region, section, store.config.throttleEnabled, inspectingPeersId, inspectingId, inspectingPeersId, downloadFocus, seedFocus, !!inspectingId, inspectFocusSelected)} />
           </Box>
         ) : null}
       </Box>

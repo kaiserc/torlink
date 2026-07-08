@@ -51,6 +51,8 @@ export interface Store {
 
   inspectingId: string | null;
   setInspectingId: (id: string | null) => void;
+  inspectingPeersId: string | null;
+  setInspectingPeersId: (id: string | null) => void;
 
   startDownload: (input: {
     id: string;
