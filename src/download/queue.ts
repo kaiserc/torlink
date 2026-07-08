@@ -619,9 +619,7 @@ export class DownloadQueue extends EventEmitter {
     saveSeedsSync(this.seedRecords());
   }
 
-  getPeers(id: string): PeerInfo[] | null {
-    return this.engine.getPeers(id);
-  }
+
 
   suspend(): void {
     // Keep active downloads as "downloading" so restore() resumes them on the

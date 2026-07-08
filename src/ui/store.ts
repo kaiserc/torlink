@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { Config } from "../config/config";
 import type { DownloadQueue } from "../download/queue";
 import type { HistoryItem } from "../download/history";
-import type { QueueItem, SeedItem, TorrentFileInfo } from "../download/types";
+import type { QueueItem, SeedItem, TorrentFileInfo, PeerInfo } from "../download/types";
 import type { SourceGroup, SourceId } from "../sources/types";
 
 export type View = "splash" | "browser";
@@ -49,10 +49,7 @@ export interface Store {
   seedFocus: SeedFocus | null;
   setSeedFocus: (f: SeedFocus | null) => void;
 
-  inspectingId: string | null;
-  setInspectingId: (id: string | null) => void;
-  inspectingPeersId: string | null;
-  setInspectingPeersId: (id: string | null) => void;
+
 
   startDownload: (input: {
     id: string;
@@ -207,4 +204,36 @@ export function useFiles(queue: DownloadQueue, id: string | null, magnet: string
   }, [queue, id, magnet]);
   
   return files;
+}
+
+export function usePeers(queue: DownloadQueue, id: string | null): PeerInfo[] | null {
+  const [peers, setPeers] = useState<PeerInfo[] | null>(
+    () => (id ? queue.getPeers(id) : null)
+  );
+
+  useEffect(() => {
+    if (!id) {
+      setPeers(null);
+      return;
+    }
+    
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    const onUpdate = (): void => {
+      if (timer) return;
+      timer = setTimeout(() => {
+        timer = null;
+        setPeers(queue.getPeers(id));
+      }, 200);
+    };
+    
+    queue.on("update", onUpdate);
+    onUpdate();
+    
+    return () => {
+      queue.off("update", onUpdate);
+      if (timer) clearTimeout(timer);
+    };
+  }, [queue, id]);
+
+  return peers;
 }

@@ -257,24 +257,7 @@ export class TorrentEngine {
     }
   }
 
-  getPeers(id: string): PeerInfo[] | null {
-    const t = this.torrents.get(id);
-    if (!t) return null;
-    
-    // WebTorrent's "wires" represent the active peer connections
-    // @ts-ignore - wires is an internal property not in the DT typings
-    const wires: any[] = t.wires || [];
-    
-    return wires.map((w) => ({
-      ip: w.remoteAddress || "Unknown",
-      client: w.peerExtendedHandshake?.v || "Unknown",
-      peerId: w.peerId || "Unknown",
-      downloaded: w.downloaded || 0,
-      uploaded: w.uploaded || 0,
-      downSpeed: w.downloadSpeed ? w.downloadSpeed() : 0,
-      upSpeed: w.uploadSpeed ? w.uploadSpeed() : 0,
-    }));
-  }
+
 
   async stream(id: string, targetPath?: string): Promise<string | null> {
     const t = this.torrents.get(id);
@@ -318,44 +301,6 @@ export class TorrentEngine {
     this.client.throttleDownload(this.throttleEnabled ? this.throttleDown : -1);
     // @ts-ignore
     this.client.throttleUpload(this.throttleEnabled ? this.throttleUp : -1);
-  }
-
-  getPeers(id: string): PeerInfo[] | null {
-    const t = this.torrents.get(id);
-    if (!t) return null;
-    
-    // WebTorrent's "wires" represent the active peer connections
-    // @ts-ignore - wires is an internal property not in the DT typings
-    const wires: any[] = t.wires || [];
-    
-    return wires.map((w) => ({
-      ip: w.remoteAddress || "Unknown",
-      client: w.peerExtendedHandshake?.v || "Unknown",
-      peerId: w.peerId || "Unknown",
-      downloaded: w.downloaded || 0,
-      uploaded: w.uploaded || 0,
-      downSpeed: w.downloadSpeed ? w.downloadSpeed() : 0,
-      upSpeed: w.uploadSpeed ? w.uploadSpeed() : 0,
-    }));
-  }
-
-  getPeers(id: string): PeerInfo[] | null {
-    const t = this.torrents.get(id);
-    if (!t) return null;
-    
-    // WebTorrent's "wires" represent the active peer connections
-    // @ts-ignore - wires is an internal property not in the DT typings
-    const wires: any[] = t.wires || [];
-    
-    return wires.map((w) => ({
-      ip: w.remoteAddress || "Unknown",
-      client: w.peerExtendedHandshake?.v || "Unknown",
-      peerId: w.peerId || "Unknown",
-      downloaded: w.downloaded || 0,
-      uploaded: w.uploaded || 0,
-      downSpeed: w.downloadSpeed ? w.downloadSpeed() : 0,
-      upSpeed: w.uploadSpeed ? w.uploadSpeed() : 0,
-    }));
   }
 
   remove(id: string): void {
