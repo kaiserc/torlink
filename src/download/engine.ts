@@ -1,7 +1,9 @@
 import WebTorrent, { type Torrent } from "webtorrent";
 import type { TorrentFileInfo, PeerInfo } from "./types";
 import { saveTorrentMeta } from "./persist";
+import { createRequire } from "node:module";
 
+const require = createRequire(import.meta.url);
 
 export interface TorrentProgress {
   progress: number;
