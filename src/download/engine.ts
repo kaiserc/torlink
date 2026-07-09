@@ -278,7 +278,7 @@ export class TorrentEngine {
             let torrent: WebTorrent.Torrent | undefined;
             for (const t of this.torrents.values()) {
               if (t.infoHash === infoHash) {
-                torrent = t.torrent;
+                torrent = t;
                 break;
               }
             }
