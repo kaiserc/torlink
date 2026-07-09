@@ -39,11 +39,26 @@ export type AddOutcome = "added" | "duplicate" | "invalid";
 // download. Deduplicates by info hash (the queue's own id), so re-submitting the
 // same torrent is a no-op rather than a restart. Never throws — bad input is
 // reported as "invalid" so callers (a watcher, an HTTP handler) can fail soft.
-export async function addInput(runtime: Runtime, input: string): Promise<AddOutcome> {
+export interface AddInputOptions {
+  // Treat an input ending in .torrent as a local file path and read it. Only
+  // the watch folder opts in; a network caller (the HTTP add API) must never
+  // be able to point the daemon at the local filesystem.
+  allowTorrentPath?: boolean;
+}
+
+export async function addInput(
+  runtime: Runtime,
+  input: string,
+  options: AddInputOptions = {},
+): Promise<AddOutcome> {
   const trimmed = input.trim();
-  const parsed = /\.torrent$/i.test(trimmed)
-    ? await magnetFromTorrentFile(trimmed)
-    : parseInput(trimmed);
+  let parsed;
+  if (/\.torrent$/i.test(trimmed)) {
+    if (!options.allowTorrentPath) return "invalid";
+    parsed = await magnetFromTorrentFile(trimmed);
+  } else {
+    parsed = parseInput(trimmed);
+  }
   if (!parsed) return "invalid";
   if (runtime.queue.has(parsed.infoHash)) return "duplicate";
   await fs.mkdir(runtime.downloadDir, { recursive: true }).catch(() => {});

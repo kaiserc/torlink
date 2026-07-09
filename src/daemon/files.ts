@@ -7,14 +7,14 @@
 // deliberately non-standard and overridable with --port.
 
 import http from "node:http";
+import { pipeline } from "node:stream";
 import { createReadStream } from "node:fs";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { loadConfig } from "../config/config";
+import { LOOPBACK_HOSTS, isAuthorized, hostHeaderOk } from "./auth";
 
 export const DEFAULT_FILES_PORT = 9160;
-
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
 
 const MIME: Record<string, string> = {
   ".mp4": "video/mp4",
@@ -96,14 +96,6 @@ export function parseRange(header: string | undefined, size: number): Range | nu
   return { start, end };
 }
 
-function authHeaderOk(token: string | null, authHeader: string | undefined): boolean {
-  if (!token) return true;
-  if (!authHeader) return false;
-  const bearer = /^Bearer\s+(.+)$/i.exec(authHeader.trim());
-  const provided = bearer ? bearer[1]!.trim() : authHeader.trim();
-  return provided === token;
-}
-
 function log(message: string): void {
   console.log(`[torlnk files] ${new Date().toISOString()} ${message}`);
 }
@@ -156,7 +148,10 @@ function sendFile(
       res.end();
       return;
     }
-    createReadStream(full, { start: range.start, end: range.end }).pipe(res);
+    // pipeline (not pipe) so the read stream is destroyed when the client
+    // disconnects mid-transfer; a media player's seeks abort constantly, and
+    // plain pipe would leak an open handle per aborted request.
+    pipeline(createReadStream(full, { start: range.start, end: range.end }), res, () => {});
     return;
   }
 
@@ -165,7 +160,7 @@ function sendFile(
     res.end();
     return;
   }
-  createReadStream(full).pipe(res);
+  pipeline(createReadStream(full), res, () => {});
 }
 
 export interface FilesOptions {
@@ -203,7 +198,14 @@ export async function runFiles(options: FilesOptions = {}): Promise<void> {
         res.end(JSON.stringify({ error: "method not allowed" }));
         return;
       }
-      if (!authHeaderOk(token, req.headers.authorization)) {
+      // Tokenless means loopback-bound; require a loopback Host so a hostile
+      // webpage can't reach us through DNS rebinding.
+      if (!token && !hostHeaderOk(req.headers.host)) {
+        res.writeHead(403, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "forbidden host" }));
+        return;
+      }
+      if (!isAuthorized(token, req.headers.authorization)) {
         res.writeHead(401, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ error: "unauthorized" }));
         return;

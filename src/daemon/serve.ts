@@ -10,11 +10,13 @@
 import http from "node:http";
 import { startRuntime, addInput, type Runtime } from "./runtime";
 import { startSeedReaper } from "./seed-reaper";
+import { LOOPBACK_HOSTS, isAuthorized, hostHeaderOk } from "./auth";
 import { VERSION } from "../version";
+
+export { isAuthorized } from "./auth";
 
 export const DEFAULT_API_PORT = 9161;
 
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
 const MAX_BODY_BYTES = 64 * 1024; // a magnet is small; cap the body hard
 
 export interface ApiResponse {
@@ -31,23 +33,6 @@ export interface ServeOptions {
   seedTimeMs?: number;
   /** With seedTimeMs, also delete the files when the timer expires. */
   deleteFiles?: boolean;
-}
-
-// Constant-ish comparison — the token isn't a password hash, but don't leak
-// length via early exit on the common prefix.
-function tokenMatches(expected: string, provided: string): boolean {
-  if (expected.length !== provided.length) return false;
-  let diff = 0;
-  for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ provided.charCodeAt(i);
-  return diff === 0;
-}
-
-export function isAuthorized(token: string | null, authHeader: string | undefined): boolean {
-  if (!token) return true; // no token configured -> open (loopback only, enforced at bind)
-  if (!authHeader) return false;
-  const bearer = /^Bearer\s+(.+)$/i.exec(authHeader.trim());
-  const provided = bearer ? bearer[1]!.trim() : authHeader.trim();
-  return tokenMatches(token, provided);
 }
 
 // Pull a magnet / info hash out of a request body. Accepts JSON ({ magnet } or
@@ -115,21 +100,34 @@ export async function handleApi(
   return { status: 404, body: { error: "not found" } };
 }
 
-function readBody(req: http.IncomingMessage): Promise<string> {
+// Read the body up to the size cap. On overflow resolve tooLarge immediately
+// (further chunks are ignored) so the caller can answer 413 on a live socket
+// and close the connection afterwards, instead of writing to a destroyed one.
+function readBody(req: http.IncomingMessage): Promise<{ text: string; tooLarge: boolean }> {
   return new Promise((resolve) => {
     let size = 0;
+    let settled = false;
     const chunks: Buffer[] = [];
     req.on("data", (c: Buffer) => {
+      if (settled) return;
       size += c.length;
       if (size > MAX_BODY_BYTES) {
-        req.destroy();
-        resolve("");
+        settled = true;
+        resolve({ text: "", tooLarge: true });
         return;
       }
       chunks.push(c);
     });
-    req.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-    req.on("error", () => resolve(""));
+    req.on("end", () => {
+      if (settled) return;
+      settled = true;
+      resolve({ text: Buffer.concat(chunks).toString("utf8"), tooLarge: false });
+    });
+    req.on("error", () => {
+      if (settled) return;
+      settled = true;
+      resolve({ text: "", tooLarge: false });
+    });
   });
 }
 
@@ -162,7 +160,23 @@ export async function runServe(options: ServeOptions = {}): Promise<void> {
     void (async () => {
       const method = req.method ?? "GET";
       const urlPath = (req.url ?? "/").split("?")[0]!;
-      const bodyText = method === "POST" ? await readBody(req) : "";
+      // Tokenless means loopback-bound; require a loopback Host so a hostile
+      // webpage can't reach us through DNS rebinding.
+      if (!token && !hostHeaderOk(req.headers.host)) {
+        res.writeHead(403, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "forbidden host" }));
+        log(`${method} ${urlPath} -> 403 (host)`);
+        return;
+      }
+      const body = method === "POST" ? await readBody(req) : { text: "", tooLarge: false };
+      if (body.tooLarge) {
+        res.writeHead(413, { "Content-Type": "application/json", Connection: "close" });
+        res.end(JSON.stringify({ error: "body too large" }));
+        res.once("finish", () => req.destroy());
+        log(`${method} ${urlPath} -> 413`);
+        return;
+      }
+      const bodyText = body.text;
       let out: ApiResponse;
       try {
         out = await handleApi(runtime, token, method, urlPath, req.headers.authorization, bodyText);

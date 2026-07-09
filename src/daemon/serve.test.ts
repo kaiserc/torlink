@@ -86,6 +86,12 @@ describe("handleApi", () => {
     expect(add).not.toHaveBeenCalled();
   });
 
+  it("400s a .torrent file path (no filesystem reach over HTTP)", async () => {
+    const res = await handleApi(runtime, null, "POST", "/add", undefined, "C:/secrets/x.torrent");
+    expect(res.status).toBe(400);
+    expect(add).not.toHaveBeenCalled();
+  });
+
   it("lists downloads on GET /downloads", async () => {
     const res = await handleApi(runtime, null, "GET", "/downloads", undefined, "");
     expect(res.status).toBe(200);

@@ -52,4 +52,13 @@ describe("addInput", () => {
     expect(await addInput(runtime, "not a magnet")).toBe("invalid");
     expect(add).not.toHaveBeenCalled();
   });
+
+  it("rejects a .torrent file path unless the caller opts in", async () => {
+    const { runtime, add } = fakeRuntime(dir);
+    const file = path.join(dir, "example.torrent");
+    expect(await addInput(runtime, file)).toBe("invalid");
+    expect(add).not.toHaveBeenCalled();
+    // Opted in (the watch folder), a bad file still fails soft as invalid.
+    expect(await addInput(runtime, file, { allowTorrentPath: true })).toBe("invalid");
+  });
 });

@@ -61,7 +61,7 @@ export async function processFile(runtime: Runtime, dir: string, name: string): 
   const input = await resolveInput(dir, name);
   let outcome: AddOutcome;
   try {
-    outcome = input ? await addInput(runtime, input) : "invalid";
+    outcome = input ? await addInput(runtime, input, { allowTorrentPath: true }) : "invalid";
   } catch {
     outcome = "invalid";
   }
