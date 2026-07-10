@@ -294,7 +294,19 @@ export class TorrentEngine {
               if (file) {
                 // Bypass WebTorrent's broken URL router completely
                 const { NodeServer } = require("webtorrent/lib/server.js");
-                NodeServer.serveFile(file, req, res);
+                const fakeRes = { headers: {} as Record<string, any> };
+                const result = NodeServer.serveFile(file, req, fakeRes);
+
+                const status = result.statusCode || result.status || 200;
+                res.writeHead(status, result.headers);
+                
+                if (result.body && typeof result.body.pipe === "function") {
+                  result.body.pipe(res);
+                } else if (result.body) {
+                  res.end(result.body);
+                } else {
+                  res.end();
+                }
                 return;
               }
             }
