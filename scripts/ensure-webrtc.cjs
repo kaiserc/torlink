@@ -44,9 +44,9 @@ try {
   console.error('');
   console.error('torlnk: could not build the WebRTC native module.');
   console.error('torlnk still works; WebRTC peers just stay unavailable.');
-  console.error('To enable them, install cmake and a C++ compiler, then reinstall:');
-  console.error('  Fedora:  sudo dnf install cmake gcc-c++');
-  console.error('  Debian / Ubuntu:  sudo apt install cmake g++');
+  console.error('To enable them, install the build tools, then reinstall:');
+  console.error('  Fedora:  sudo dnf install cmake gcc-c++ openssl-devel libstdc++-static');
+  console.error('  Debian / Ubuntu:  sudo apt install cmake g++ libssl-dev');
   console.error('  macOS:   xcode-select --install');
   console.error('  Windows: install CMake and Visual Studio Build Tools');
   console.error('');
