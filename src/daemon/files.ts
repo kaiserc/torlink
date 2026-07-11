@@ -13,6 +13,7 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { loadConfig } from "../config/config";
 import { LOOPBACK_HOSTS, isAuthorized, hostHeaderOk } from "./auth";
+import { renderDirectoryListing } from "./template";
 
 export const DEFAULT_FILES_PORT = 9160;
 
@@ -100,18 +101,29 @@ function log(message: string): void {
   console.log(`[torlnk files] ${new Date().toISOString()} ${message}`);
 }
 
-async function sendListing(res: http.ServerResponse, dir: string, method: string): Promise<void> {
+async function sendListing(req: http.IncomingMessage, res: http.ServerResponse, dir: string, root: string, method: string): Promise<void> {
   const names = await fs.readdir(dir).catch(() => [] as string[]);
   const entries = await Promise.all(
     names.map(async (name) => {
       const stat = await fs.stat(path.join(dir, name)).catch(() => null);
       return {
         name,
-        type: stat?.isDirectory() ? "dir" : "file",
+        type: (stat?.isDirectory() ? "dir" : "file") as "dir" | "file",
         size: stat?.isFile() ? stat.size : undefined,
       };
     }),
   );
+
+  const accept = req.headers.accept || "";
+  if (accept.includes("text/html")) {
+    let relativePath = "/" + path.relative(root, dir).split(path.sep).join("/");
+    if (relativePath === "//") relativePath = "/";
+    const html = renderDirectoryListing(relativePath, entries);
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end(method === "HEAD" ? undefined : html);
+    return;
+  }
+
   const payload = JSON.stringify({ entries });
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(method === "HEAD" ? undefined : payload);
@@ -224,7 +236,7 @@ export async function runFiles(options: FilesOptions = {}): Promise<void> {
         return;
       }
       try {
-        if (stat.isDirectory()) await sendListing(res, full, method);
+        if (stat.isDirectory()) await sendListing(req, res, full, root, method);
         else sendFile(req, res, full, stat.size);
       } catch {
         if (!res.headersSent) {
