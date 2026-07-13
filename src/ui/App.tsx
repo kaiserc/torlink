@@ -525,8 +525,18 @@ export function App({
       <TabTitle />
       <Box flexDirection="column" paddingX={1}>
         <Box justifyContent="space-between">
-          <Logo />
-          {notice ? <Text color={COLOR.good}>{notice}</Text> : null}
+          {/* The wordmark never shrinks: without these constraints a long notice
+              squeezes the logo box and wraps its own text through the art. */}
+          <Box flexShrink={0}>
+            <Logo />
+          </Box>
+          {notice ? (
+            <Box flexShrink={1} minWidth={0} marginLeft={2}>
+              <Text color={COLOR.good} wrap="truncate-end">
+                {notice}
+              </Text>
+            </Box>
+          ) : null}
         </Box>
         {showTopRule ? <Rule width={ruleWidth} /> : null}
 
