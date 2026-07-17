@@ -43,6 +43,8 @@ import { TrackersPrompt } from "./components/TrackersPrompt";
 import { footerHints } from "./keymap";
 import { COLOR, ICON } from "./theme";
 import { useMouseWheel } from "./hooks/useMouseWheel";
+import { VERSION } from "../version";
+import { fetchLatestVersion, isNewer } from "../update/version";
 import type { SourceId } from "../sources/types";
 
 export function App({
@@ -112,6 +114,7 @@ export function App({
     setInspectingMagnet(magnet ?? null);
   }, []);
   
+  const [updateVersion, setUpdateVersion] = useState<string | null>(null);
   const booting = useRef(false);
 
   useEffect(() => {
@@ -151,6 +154,20 @@ export function App({
       alive = false;
     };
   }, [initialMagnet, initialTorrent]);
+
+  // Best-effort, once per launch, off the hot path: if a newer release exists,
+  // surface a quiet banner. Any failure (offline, opt-out) just leaves it hidden.
+  useEffect(() => {
+    if (process.env.TORLINK_NO_UPDATE_CHECK) return;
+    let alive = true;
+    void (async () => {
+      const latest = await fetchLatestVersion();
+      if (alive && latest && isNewer(VERSION, latest)) setUpdateVersion(latest);
+    })();
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!queue) return;
@@ -621,7 +638,7 @@ export function App({
     return (
       <StoreContext.Provider value={store}>
         <TabTitle />
-        <Splash />
+        <Splash updateVersion={updateVersion} />
       </StoreContext.Provider>
     );
   }
@@ -631,12 +648,20 @@ export function App({
       <TabTitle />
       <Box flexDirection="column" paddingX={1}>
         <Box justifyContent="space-between">
-          <Box gap={1} alignItems="center">
+          {/* The wordmark never shrinks: without these constraints a long notice
+              squeezes the logo box and wraps its own text through the art. */}
+          <Box flexShrink={0} gap={1} alignItems="center">
             <Logo />
             {store.config.throttleEnabled ? <Text dimColor>🐢 Throttled</Text> : null}
             {store.config.webServerEnabled ? <Text dimColor>🌐 http://localhost:{store.config.webServerPort}</Text> : null}
           </Box>
-          {notice ? <Text color={COLOR.good}>{notice}</Text> : null}
+          {notice ? (
+            <Box flexShrink={1} minWidth={0} marginLeft={2}>
+              <Text color={COLOR.good} wrap="truncate-end">
+                {notice}
+              </Text>
+            </Box>
+          ) : null}
         </Box>
         {showTopRule ? <Rule width={ruleWidth} /> : null}
 
