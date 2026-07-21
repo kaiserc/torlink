@@ -37,7 +37,7 @@ export function Splash({ updateVersion }: { updateVersion?: string | null } = {}
         <Logo />
       ) : (
         <Text bold color={COLOR.accent}>
-          torlink
+          Klink
         </Text>
       )}
       <Box marginTop={2}>

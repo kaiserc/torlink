@@ -35,7 +35,7 @@ describe("readManifest", () => {
 
   it("resolves this repo's own manifest from the source tree", () => {
     const m = readManifest();
-    expect(m?.name).toBe("torlnk");
+    expect(m?.name).toBe("klink");
     expect(m?.version).toMatch(/^\d+\.\d+\.\d+$/);
   });
 });

@@ -53,7 +53,7 @@ describe("fetchLatestVersion", () => {
         return okResponse("9.9.9");
       },
     });
-    expect(urls).toEqual(["https://registry.npmjs.org/torlnk/latest"]);
+    expect(urls).toEqual(["https://registry.npmjs.org/klink/latest"]);
   });
   it("returns null on a non-ok response", async () => {
     const v = await fetchLatestVersion({
