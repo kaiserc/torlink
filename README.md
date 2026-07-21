@@ -8,7 +8,7 @@ Finding a torrent these days sucks. One site is a minefield of fake download but
 
 **Klink** is a sleek torrent finder and downloader that lives in your terminal, with zero setup and nothing to configure. One search checks a short, curated list of reputable sources at once, and whatever you pick downloads straight to your computer.
 
-> **Note**: Klink is an enhanced fork of [torlink](https://github.com/baairon/torlink) featuring advanced TUI capabilities, live peer inspection, media streaming, bandwidth throttling, and physical file organization.
+> **Note**: Klink is an enhanced fork of [torlink](https://github.com/baairon/torlink) featuring advanced TUI capabilities, live peer inspection, media streaming, bandwidth throttling, and physical file organisation.
 
 ---
 
@@ -16,26 +16,26 @@ Finding a torrent these days sucks. One site is a minefield of fake download but
 
 Klink expands on upstream torlink with key power-user features:
 
-- 🔍 **Peer Inspector Pane**: Press `b` or inspect on active downloads to view live swarm peer connections, IP addresses, client software strings, and individual peer transfer rates.
+- 🔒 **Klink branding**: Renamed from torlink with an 8-bit padlock identity and multi-colour terminal logo (silver shackle, gold body, red K, purple gradient wordmark).
+- 🔍 **Peer Inspector Pane**: Press `b` on an active download to view live swarm peer connections, IP addresses, client software strings, and individual peer transfer rates.
 - 🐢 **Turtle Mode (Bandwidth Throttling)**: Toggle global download and upload speed limits on the fly with a single keypress (`b`) for low-bandwidth or shared network environments.
 - 📁 **File Inspection & Selective Download**: Inspect multi-file torrent contents before or during download, view nested file trees, and toggle individual files on or off.
-- 🎬 **Direct Media Streaming & Themed Web UI**: Stream video files directly over HTTP while downloading (`klink serve` / `klink files`), featuring an integrated web interface with a dark/light theme switcher.
-- ✅ **Completed Tab & Smart File Organization**: Cleanly separate active downloads, seeding items, and finished downloads with directory routing.
+- 🎬 **Direct Media Streaming & Themed Web UI**: Stream video files directly over HTTP while downloading (`klink serve` / `klink files`), with an integrated web interface featuring a dark/light theme switcher.
+- ✅ **Completed Tab & Smart File Organisation**: Cleanly separate active downloads, seeding items, and finished downloads with directory routing.
 - ⚠️ **Action Confirmation Dialogs**: Safety confirmation prompts before destructive actions like cancelling downloads or clearing history to prevent accidental data loss.
+- 🔧 **WebTorrent stability patch**: Guards against a null-pointer crash in `_request` introduced in webtorrent 3.x, keeping the daemon stable under heavy peer churn.
 
 ---
 
 ## Get started
 
-1. **Install Node.js** (from [nodejs.org](https://nodejs.org)), it's all Klink needs.
-2. **Open your terminal.**
-3. **Start it:**
+**Requires Node.js 26 or later** — download it from [nodejs.org](https://nodejs.org).
 
-   ```sh
-   npx klink
-   ```
+```sh
+npx klink
+```
 
-That's the only thing you'll type. Klink opens straight to a search bar: search for what you want, paste in a magnet link or a bare infohash, or just press Enter on an empty box to browse the curated library. From there it's all keypresses, nothing to memorize, and `?` brings up the full list anytime.
+That's the only thing you'll type. Klink opens straight to a search bar: search for what you want, paste in a magnet link or a bare infohash, or just press Enter on an empty box to browse the curated library. From there it's all keypresses, nothing to memorise, and `?` brings up the full list anytime.
 
 ## Finding something
 
@@ -97,9 +97,29 @@ To run or work on Klink locally:
    npm run build
    npx klink
    ```
+4. Run tests and type-checks before opening a PR:
+   ```sh
+   npm run typecheck
+   npm run test
+   ```
 
 Before opening a PR, skim [CONTRIBUTING.md](CONTRIBUTING.md); it lays out the bar with examples from real merged PRs.
+
+## Differences from upstream torlink
+
+| Feature | torlink (upstream) | Klink (this fork) |
+| --- | --- | --- |
+| Name / branding | torlink | **Klink** with 8-bit padlock logo |
+| Node.js requirement | ≥ 18 | **≥ 26** |
+| Peer Inspector | ❌ | ✅ |
+| Turtle Mode | ❌ | ✅ |
+| File Inspection | ❌ | ✅ |
+| Media Streaming | ❌ | ✅ |
+| Completion Tab | ❌ | ✅ |
+| Confirmation Dialogs | ❌ | ✅ |
+| WebTorrent null-ref patch | ❌ | ✅ |
 
 ## Privacy
 
 Your files stay on your disk, and nothing routes through a central server; Klink only talks to the torrent network directly. Once a download finishes it keeps seeding by default, sharing it back so the next person can find it just as easily. The network only works because people pass things along, and even a few minutes makes a real difference. If you'd rather not, opt out anytime: open the Seeding tab, press `p` to pause or stop any item, and press it again to pick it back up. Always your call.
+
