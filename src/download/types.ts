@@ -1,18 +1,9 @@
 import type { SourceId } from "../sources/types";
 
-export type QueueStatus = "downloading" | "paused" | "failed";
-
-export interface PeerInfo {
-  ip: string;
-  client: string;
-  peerId: string;
-  downloaded: number;
-  uploaded: number;
-  downSpeed: number;
-  upSpeed: number;
-}
-
-export type DownloadStatus = "downloading" | "paused" | "completed" | "failed";
+// "queued" = waiting for a free download slot (see TORLINK_MAX_DOWNLOADS). Unlike
+// "paused" (an explicit user action) a queued item is started automatically as
+// soon as a slot frees.
+export type DownloadStatus = "downloading" | "queued" | "paused" | "completed" | "failed";
 
 export type SeedStatus = "seeding" | "paused" | "missing";
 

@@ -30,6 +30,7 @@ export const HELP_GROUPS: HelpGroup[] = [
     title: "Search",
     hints: [
       { keys: "/", label: "Edit search" },
+      { keys: "f", label: "Filter list" },
       { keys: "d", label: "Download (shift+d picks folder)" },
       { keys: "s", label: "Sort results" },
       { keys: "z", label: "Hide dead torrents" },
@@ -42,13 +43,12 @@ export const HELP_GROUPS: HelpGroup[] = [
     title: "Downloads",
     hints: [
       { keys: "p", label: "Pause/resume" },
-      { keys: "c", label: "Cancel or remove" },
+      { keys: "c", label: "Cancel or remove (shift+c: all)" },
       { keys: "f", label: "Retry failed" },
       { keys: "d", label: "Download again" },
       { keys: "e", label: "Open folder" },
       { keys: "i", label: "Inspect files" },
       { keys: "s", label: "Export torrent file" },
-      { keys: "x", label: "Clear recent" },
     ],
   },
   {
@@ -168,6 +168,7 @@ export function footerHints(
       { keys: "y", label: "Copy" },
       { keys: "s", label: "Sort" },
       { keys: "/", label: "Search" },
+      { keys: "f", label: "Filter" },
       SWITCH,
       ALWAYS,
     ];
