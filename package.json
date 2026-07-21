@@ -1,10 +1,10 @@
 {
-  "name": "torlnk",
+  "name": "klink",
   "version": "1.5.0",
-  "description": "A sleek, zero-setup torrent finder and downloader that lives right in your terminal.",
+  "description": "Klink - A sleek, zero-setup torrent finder and downloader TUI with peer inspection, media streaming, and turtle mode.",
   "type": "module",
   "bin": {
-    "torlnk": "./dist/cli.cjs"
+    "klink": "./dist/cli.cjs"
   },
   "files": [
     "dist",

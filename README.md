@@ -1,29 +1,48 @@
 <p align="center">
-  <img src="preview/splash.svg" alt="torlink, curated torrents straight from your terminal" style="max-width: 832px; width: 100%; height: auto;">
+  <img src="preview/splash.svg" alt="klink, curated torrents straight from your terminal" style="max-width: 832px; width: 100%; height: auto;">
 </p>
+
+# Klink
 
 Finding a torrent these days sucks. One site is a minefield of fake download buttons. Another hides the real link under a popup that spawns two more tabs. And after all that, half the results are dead, zero seeders.
 
-torlink is a torrent finder that lives in your terminal, with zero setup and nothing to configure. One search checks a short, curated list of reputable sources at once, and whatever you pick downloads straight to your computer. The files are yours, saved to your downloads folder.
+**Klink** is a sleek torrent finder and downloader that lives in your terminal, with zero setup and nothing to configure. One search checks a short, curated list of reputable sources at once, and whatever you pick downloads straight to your computer.
+
+> **Note**: Klink is an enhanced fork of [torlink](https://github.com/baairon/torlink) featuring advanced TUI capabilities, live peer inspection, media streaming, bandwidth throttling, and physical file organization.
+
+---
+
+## ⚡ What makes Klink different (Fork Features)
+
+Klink expands on upstream torlink with key power-user features:
+
+- 🔍 **Peer Inspector Pane**: Press `b` or inspect on active downloads to view live swarm peer connections, IP addresses, client software strings, and individual peer transfer rates.
+- 🐢 **Turtle Mode (Bandwidth Throttling)**: Toggle global download and upload speed limits on the fly with a single keypress (`b`) for low-bandwidth or shared network environments.
+- 📁 **File Inspection & Selective Download**: Inspect multi-file torrent contents before or during download, view nested file trees, and toggle individual files on or off.
+- 🎬 **Direct Media Streaming & Themed Web UI**: Stream video files directly over HTTP while downloading (`klink serve` / `klink files`), featuring an integrated web interface with a dark/light theme switcher.
+- ✅ **Completed Tab & Smart File Organization**: Cleanly separate active downloads, seeding items, and finished downloads with directory routing.
+- ⚠️ **Action Confirmation Dialogs**: Safety confirmation prompts before destructive actions like cancelling downloads or clearing history to prevent accidental data loss.
+
+---
 
 ## Get started
 
-1. **Install Node** (from [nodejs.org](https://nodejs.org)), it's all torlink needs.
+1. **Install Node.js** (from [nodejs.org](https://nodejs.org)), it's all Klink needs.
 2. **Open your terminal.**
 3. **Start it:**
 
    ```sh
-   npx torlnk
+   npx klink
    ```
 
-That's the only thing you'll type. torlink opens straight to a search bar: search for what you want, paste in a magnet link or a bare infohash, or just press Enter on an empty box to browse the curated library. From there it's all keypresses, nothing to memorize, and `?` brings up the full list anytime.
+That's the only thing you'll type. Klink opens straight to a search bar: search for what you want, paste in a magnet link or a bare infohash, or just press Enter on an empty box to browse the curated library. From there it's all keypresses, nothing to memorize, and `?` brings up the full list anytime.
 
 ## Finding something
 
 Type what you're looking for and press Enter. Results stream in from every source as they answer, tagged with size and how many people are sharing each one, so you can see what'll come down fast. Arrow to what you want and press `d` to save it, or `shift+d` to pick a different folder for just that download.
 
 <p align="center">
-  <img src="preview/browse.svg" alt="torlink's browse view: the sidebar, the search bar, and merged results from every source" style="max-width: 832px; width: 100%; height: auto;">
+  <img src="preview/browse.svg" alt="klink's browse view: the sidebar, the search bar, and merged results from every source" style="max-width: 832px; width: 100%; height: auto;">
 </p>
 
 ## Your downloads
@@ -33,7 +52,7 @@ Active downloads sit up top with their progress, speed, and time left; when one 
 Downloads run in the background while you keep searching, so you can queue up as many as you want. They save to your downloads folder, and the Downloads pane keeps tabs on each one; press `o` anytime to change where that is, or grab one result with `shift+d` to send it somewhere else without touching the default. When something finishes it keeps seeding automatically so the next person can find it too, and the Seeding tab lets you pause or stop that anytime.
 
 <p align="center">
-  <img src="preview/downloads.svg" alt="torlink's Downloads pane: live progress on top, recently downloaded below" style="max-width: 832px; width: 100%; height: auto;">
+  <img src="preview/downloads.svg" alt="klink's Downloads pane: live progress on top, recently downloaded below" style="max-width: 832px; width: 100%; height: auto;">
 </p>
 
 ## What it searches
@@ -47,22 +66,22 @@ A short, hand-picked list of trusted sources:
 | TV | EZTV, The Pirate Bay, 1337x, BitTorrented |
 | Anime | Nyaa, SubsPlease |
 
-Games are the only category that can run code, so they come from FitGirl alone, a repacker with a long, trusted track record; everything else is plain video and subtitles. If a source is down, the search carries on without it, and torlink tells you which one is offline.
+Games are the only category that can run code, so they come from FitGirl alone, a repacker with a long, trusted track record; everything else is plain video and subtitles. If a source is down, the search carries on without it, and Klink tells you which one is offline.
 
 ## Headless
 
-torlink also runs without the TUI, for servers and seedboxes:
+Klink also runs without the TUI, for servers and seedboxes:
 
-    torlnk watch <dir>    download anything dropped into a folder
-    torlnk serve          take magnets over HTTP
-    torlnk files          stream finished downloads over HTTP
-    torlnk attach         keep the TUI alive across ssh sessions
+    klink watch <dir>    download anything dropped into a folder
+    klink serve          take magnets over HTTP and host themed web player
+    klink files          stream finished downloads over HTTP
+    klink attach         keep the TUI alive across ssh sessions
 
-Add `--daemon` to keep watch, serve, or files running after you log out; `torlnk --help` has the full list of modes and flags.
+Add `--daemon` to keep watch, serve, or files running after you log out; `klink --help` has the full list of modes and flags.
 
 ## Contributing
 
-To run or work on torlink locally:
+To run or work on Klink locally:
 
 1. Clone the repository and open the folder.
 2. Install dependencies:
@@ -76,21 +95,11 @@ To run or work on torlink locally:
    Or build it and run the bundled version:
    ```sh
    npm run build
-   npx torlnk
+   npx klink
    ```
 
 Before opening a PR, skim [CONTRIBUTING.md](CONTRIBUTING.md); it lays out the bar with examples from real merged PRs.
 
 ## Privacy
 
-Your files stay on your disk, and nothing routes through a central server; torlink only talks to the torrent network directly. Once a download finishes it keeps seeding by default, sharing it back so the next person can find it just as easily. The network only works because people pass things along, and even a few minutes makes a real difference. If you'd rather not, opt out anytime: open the Seeding tab, press `p` to pause or stop any item, and press it again to pick it back up. Always your call.
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=baairon%2Ftorlink&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=baairon/torlink&type=date&theme=dark&legend=top-left&sealed_token=6RClUrW7A_foMjVMW-jdJ_bLj-wl8jtLiajry7T0uQ2F-UraDTQq4-n_hj9rdxkfW9Iqxekmz3p9eNLNUgZM18i04-fIvEYFHl-lz90OrCT5hhglY_qgSKoYh3IanPSjj8nUgVIMAGg6ZtPucVGVu-aCYcFzE3aertjFE4CPRDrO9dNaJKRxPFTH0clL" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=baairon/torlink&type=date&legend=top-left&sealed_token=6RClUrW7A_foMjVMW-jdJ_bLj-wl8jtLiajry7T0uQ2F-UraDTQq4-n_hj9rdxkfW9Iqxekmz3p9eNLNUgZM18i04-fIvEYFHl-lz90OrCT5hhglY_qgSKoYh3IanPSjj8nUgVIMAGg6ZtPucVGVu-aCYcFzE3aertjFE4CPRDrO9dNaJKRxPFTH0clL" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=baairon/torlink&type=date&legend=top-left&sealed_token=6RClUrW7A_foMjVMW-jdJ_bLj-wl8jtLiajry7T0uQ2F-UraDTQq4-n_hj9rdxkfW9Iqxekmz3p9eNLNUgZM18i04-fIvEYFHl-lz90OrCT5hhglY_qgSKoYh3IanPSjj8nUgVIMAGg6ZtPucVGVu-aCYcFzE3aertjFE4CPRDrO9dNaJKRxPFTH0clL" />
- </picture>
-</a>
+Your files stay on your disk, and nothing routes through a central server; Klink only talks to the torrent network directly. Once a download finishes it keeps seeding by default, sharing it back so the next person can find it just as easily. The network only works because people pass things along, and even a few minutes makes a real difference. If you'd rather not, opt out anytime: open the Seeding tab, press `p` to pause or stop any item, and press it again to pick it back up. Always your call.
