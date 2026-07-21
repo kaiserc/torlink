@@ -139,7 +139,7 @@ function save(
   }
   writeFileSync(
     join(OUT_DIR, `${name}.svg`),
-    ansiToSvg(frame, { cols: COLS, title: "torlink", ...extra }),
+    ansiToSvg(frame, { cols: COLS, title: "klink", ...extra }),
   );
   console.log(`preview/${name}.svg`);
 }
