@@ -1,6 +1,6 @@
 {
   "name": "klink",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Klink - A sleek, zero-setup torrent finder and downloader TUI with peer inspection, media streaming, and turtle mode.",
   "type": "module",
   "bin": {
@@ -63,6 +63,7 @@
     "parse-torrent": "^11.0.21",
     "react": "^19.2.8",
     "serve-handler": "^6.1.7",
+    "uint8-util": "2.2.6",
     "webtorrent": "^2.8.5"
   },
   "devDependencies": {
@@ -86,6 +87,7 @@
   },
   "overrides": {
     "esbuild": "^0.28.1",
-    "ip": "^2.0.1"
+    "ip": "^2.0.1",
+    "uint8-util": "2.2.6"
   }
 }
